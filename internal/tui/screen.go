@@ -5,6 +5,7 @@ import (
 	"t-kt/internal/commands"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/muesli/reflow/wordwrap"
 )
 
 type Screen struct {
@@ -13,6 +14,8 @@ type Screen struct {
 	currentSection int
 	isLoaded       bool
 	warnMsg        []string
+	width          int
+	height         int
 }
 
 func (screen Screen) Init() tea.Cmd {
@@ -36,6 +39,11 @@ func (screen Screen) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var model tea.Model
 
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		screen.width = msg.Width
+		screen.height = msg.Height
+		return screen, nil
+
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "a", "d", "left", "right":
@@ -73,7 +81,7 @@ func (screen Screen) View() string {
 
 	sectionNavBar += "\nНажмите q для выхода.\n"
 
-	return sectionNavBar
+	return wordwrap.String(sectionNavBar, screen.width)
 }
 
 func (screen Screen) changeSection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
