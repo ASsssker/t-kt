@@ -56,6 +56,9 @@ func (screen Screen) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter", " ":
 			screen.isLoaded = true
 			return screen.updateSection(msg)
+		case "c":
+			screen.warnMsg = []string{}
+			return screen, nil
 		}
 	default:
 		return screen, nil
@@ -79,7 +82,7 @@ func (screen Screen) View() string {
 	sectionNavBar += screen.sections[screen.currentSection].View()
 	sectionNavBar += screen.viewWarnMsg()
 
-	sectionNavBar += "\nНажмите q для выхода.\n"
+	sectionNavBar += "\nc очистка вывода\tq выход. \n"
 
 	return wordwrap.String(sectionNavBar, screen.width)
 }
@@ -135,6 +138,7 @@ func (screen Screen) viewWarnMsg() string {
 		warnMsgs += fmt.Sprintf("%s\n", msg)
 	}
 
+	// Если сообщений меньше msgCount добавляем пустые строки
 	for i := warnMsgLen; i < msgCount; i++ {
 		warnMsgs += "\n"
 	}
