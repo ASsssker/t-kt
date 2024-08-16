@@ -21,7 +21,7 @@ func (s section) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "w", "s", "up", "down":
 			return s.moveCursor(msg)
-		case "enter", "space":
+		case "enter", " ":
 			return s.updateOption(msg)
 		}
 	}

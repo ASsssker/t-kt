@@ -15,7 +15,7 @@ func (b button) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "enter", "space":
+		case "enter", " ":
 			return b.action()
 		}
 	}
