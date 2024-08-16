@@ -2,9 +2,11 @@ package tui
 
 import (
 	"fmt"
+	"strings"
 	"t-kt/internal/commands"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/reflow/wordwrap"
 )
 
@@ -16,6 +18,17 @@ type Screen struct {
 	warnMsg        []string
 	width          int
 	height         int
+	selectedStyle  lipgloss.Style
+	helpStyle      lipgloss.Style
+}
+
+func newScreen(sections []tea.Model, sectionsName []string) Screen {
+	return Screen{
+		sections:      sections,
+		sectionsName:  sectionsName,
+		selectedStyle: newSelectedStyle(),
+		helpStyle:     newHelpStyle(),
+	}
 }
 
 func (screen Screen) Init() tea.Cmd {
@@ -70,19 +83,19 @@ func (screen Screen) View() string {
 	var sectionNavBar string
 
 	for idx := range screen.sections {
-		selected := " "
 		if idx == screen.currentSection {
-			selected = "+"
+			sectionNavBar += screen.selectedStyle.Render(fmt.Sprintf("%s\t", screen.sectionsName[idx]))
+			continue
 		}
 
-		sectionNavBar += fmt.Sprintf("[%s] %s\t", selected, screen.sectionsName[idx])
+		sectionNavBar += fmt.Sprintf("%s\t", screen.sectionsName[idx])
 	}
 
-	sectionNavBar += "\n"
+	sectionNavBar += "\n\n"
 	sectionNavBar += screen.sections[screen.currentSection].View()
 	sectionNavBar += screen.viewWarnMsg()
 
-	sectionNavBar += "\nc очистка вывода\tq выход. \n"
+	sectionNavBar = screen.viewHelp(sectionNavBar)
 
 	return wordwrap.String(sectionNavBar, screen.width)
 }
@@ -144,4 +157,24 @@ func (screen Screen) viewWarnMsg() string {
 	}
 
 	return warnMsgs
+}
+
+func (screen Screen) viewHelp(currentView string) string {
+	rowCount := strings.Count(currentView, "\n")
+	for i := rowCount; i <= screen.height-5; i++ {
+		currentView += "\n"
+	}
+	currentView += screen.helpStyle.Render("\nc очистка вывода\tq выход \n")
+
+	return currentView
+}
+
+func newSelectedStyle() lipgloss.Style {
+	style := lipgloss.NewStyle().Foreground(lipgloss.Color("#7FFF00"))
+	return style
+}
+
+func newHelpStyle() lipgloss.Style {
+	style := lipgloss.NewStyle().Foreground(lipgloss.Color("#787878")).Align(lipgloss.Right).Width(80)
+	return style
 }

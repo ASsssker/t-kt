@@ -4,11 +4,20 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type section struct {
-	options []tea.Model
-	cursor  int
+	options     []tea.Model
+	cursor      int
+	cursorStyle lipgloss.Style
+}
+
+func newSection(options []tea.Model) section {
+	return section{
+		options:     options,
+		cursorStyle: newCursorStyle(),
+	}
 }
 
 func (s section) Init() tea.Cmd {
@@ -35,7 +44,7 @@ func (s section) View() string {
 	for idx := range s.options {
 		cursor := " "
 		if idx == s.cursor {
-			cursor = ">"
+			cursor = s.cursorStyle.Render(">")
 		}
 
 		optionList += fmt.Sprintf("%s %s\n", cursor, s.options[idx].View())
@@ -68,4 +77,9 @@ func (s section) updateOption(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	s.options[s.cursor], cmd = s.options[s.cursor].Update(msg)
 	return s, cmd
+}
+
+func newCursorStyle() lipgloss.Style {
+	style := lipgloss.NewStyle().Foreground(lipgloss.Color("#7FFF00"))
+	return style
 }

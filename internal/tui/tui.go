@@ -8,37 +8,15 @@ import (
 
 func NewTUI() tea.Model {
 	options := []tea.Model{
-		button{
-			title: "Перезапустить сервер",
-			f:     wrap(commands.RestartServer),
-		},
-		button{
-			title: "Запустить сервер",
-			f:     wrap(commands.StartServer),
-		},
-		button{
-			title: "Остановить сервер",
-			f:     wrap(commands.StopServer),
-		},
-		button{
-			title: "Собрать саппорт",
-			f:     wrap(commands.ExtractLogs),
-		},
-		button{
-			title: "Включить дебаг для сервера",
-			f:     wrap(commands.SwitchToDebug),
-		},
-		button{
-			title: "Закрыть клиент",
-			f:     wrap(commands.KillUI),
-		},
+		newButton("Перезапустить сервер", wrap(commands.RestartServer)),
+		newButton("Запустить сервер", wrap(commands.StartServer)),
+		newButton("Остановить сервер", wrap(commands.StopServer)),
+		newButton("Собрать саппорт", wrap(commands.ExtractLogs)),
+		newButton("Включить дебаг для сервера", wrap(commands.SwitchToDebug)),
+		newButton("Закрыть клиент", wrap(commands.KillUI)),
 	}
-
-	section1 := section{options: options}
-	screen := Screen{
-		sections:     []tea.Model{section1},
-		sectionsName: []string{"AN"},
-	}
+	section1 := newSection(options)
+	screen := newScreen([]tea.Model{section1}, []string{"AN"})
 
 	return screen
 }

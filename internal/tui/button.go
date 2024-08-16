@@ -1,10 +1,22 @@
 package tui
 
-import tea "github.com/charmbracelet/bubbletea"
+import (
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
+)
 
 type button struct {
 	title string
 	f     func() tea.Msg
+	style lipgloss.Style
+}
+
+func newButton(title string, f func() tea.Msg) button {
+	return button{
+		title: title,
+		f:     f,
+		style: newButtonStyle(),
+	}
 }
 
 func (b button) Init() tea.Cmd {
@@ -24,10 +36,15 @@ func (b button) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (b button) View() string {
-	return b.title
+	return b.style.Render(b.title)
 }
 
 func (b button) action() (tea.Model, tea.Cmd) {
 	// ...
 	return b, b.f
+}
+
+func newButtonStyle() lipgloss.Style {
+	style := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFE4C4"))
+	return style
 }
