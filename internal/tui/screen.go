@@ -37,10 +37,10 @@ func (screen Screen) Init() tea.Cmd {
 
 func (screen Screen) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
-	switch msg := msg.(type) {
-	case commands.CmdResult:
+	// Обработка результатов выполнения команд
+	if res, ok := msg.(commands.CmdResult); ok {
 		screen.isLoaded = false
-		return screen.handleCmdResult(msg)
+		return screen.handleCmdResult(res)
 	}
 
 	// Блокируем интерфейс во время выпололнения команды
@@ -127,10 +127,9 @@ func (screen Screen) updateSection(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (screen Screen) handleCmdResult(msg commands.CmdResult) (tea.Model, tea.Cmd) {
-	if msg != nil {
-		screen.warnMsg = append(screen.warnMsg, msg.Error())
+	if str := msg.GetMsg(); str != "" {
+		screen.warnMsg = append(screen.warnMsg, str)
 	}
-
 	return screen, nil
 }
 
