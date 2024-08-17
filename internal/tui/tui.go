@@ -8,6 +8,7 @@ import (
 
 func NewTUI() tea.Model {
 	options := []tea.Model{
+		newButton("Очистить логи", wrap(commands.ClearLogs)),
 		newButton("Перезапустить сервер", wrap(commands.RestartServer)),
 		newButton("Запустить сервер", wrap(commands.StartServer)),
 		newButton("Остановить сервер", wrap(commands.StopServer)),

@@ -8,6 +8,25 @@ import (
 	"strings"
 )
 
+func ClearLogs() CmdResult {
+	err := clearDir(serverLogAbsPath)
+	if err != nil {
+		return err
+	}
+
+	clientLogDir, err := getClientLogDir()
+	if err != nil {
+		return err
+	}
+
+	err = clearDir(clientLogDir)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func ExtractLogs() CmdResult {
 	cmd := exec.Command(extractLogAppPath, supportDstPath)
 	if err := cmd.Run(); err != nil {
