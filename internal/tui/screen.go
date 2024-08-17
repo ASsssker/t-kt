@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"t-kt/internal/commands"
+	"t-kt/internal/commands/background"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -16,6 +17,7 @@ type Screen struct {
 	currentSection int
 	isLoaded       bool
 	warnMsg        []string
+	bgManager      background.BgTaskManager
 	width          int
 	height         int
 	selectedStyle  lipgloss.Style
@@ -23,16 +25,20 @@ type Screen struct {
 }
 
 func newScreen(sections []tea.Model, sectionsName []string) Screen {
+	bgManager := background.NewBgTaskManager(background.CheckDump)
+
 	return Screen{
 		sections:      sections,
 		sectionsName:  sectionsName,
+		bgManager:     bgManager,
 		selectedStyle: newSelectedStyle(),
 		helpStyle:     newHelpStyle(),
 	}
 }
 
 func (screen Screen) Init() tea.Cmd {
-	return tea.Batch(tea.ClearScreen)
+	cmds := append(screen.bgManager.GetWrapTasks(), tea.ClearScreen)
+	return tea.Batch(cmds...)
 }
 
 func (screen Screen) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -41,6 +47,11 @@ func (screen Screen) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if res, ok := msg.(commands.CmdResult); ok {
 		screen.isLoaded = false
 		return screen.handleCmdResult(res)
+	}
+
+	// Обработка фоновых задач
+	if res, ok := msg.(background.BgTaskResult); ok {
+		return screen.handeBg(res)
 	}
 
 	// Блокируем интерфейс во время выпололнения команды
@@ -131,6 +142,14 @@ func (screen Screen) handleCmdResult(msg commands.CmdResult) (tea.Model, tea.Cmd
 		screen.warnMsg = append(screen.warnMsg, str)
 	}
 	return screen, nil
+}
+
+func (screen Screen) handeBg(msg background.BgTaskResult) (tea.Model, tea.Cmd) {
+	if str := msg.Result.GetMsg(); str != "" {
+		screen.warnMsg = append(screen.warnMsg, str)
+	}
+
+	return screen, screen.bgManager.GetWrapTask(msg.TaskId)
 }
 
 func (screen Screen) viewWarnMsg() string {

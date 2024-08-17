@@ -2,7 +2,7 @@ package commands
 
 // paths
 const (
-	serverLogAbsPath      = "/opt/AxxonSoft/AxxonNext/Logs"
+	ServerLogAbsPath      = "/opt/AxxonSoft/AxxonNext/Logs"
 	clientLogRelativePath = "/.local/share/AxxonSoft/AxxonNext/Logs"
 
 	extractLogAppPath = "/opt/AxxonSoft/AxxonNext/bin/support"

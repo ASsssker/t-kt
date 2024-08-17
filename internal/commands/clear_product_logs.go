@@ -22,7 +22,7 @@ func clearDir(dirPath string) error {
 	return nil
 }
 
-func getClientLogDir() (string, error) {
+func GetClientLogDir() (string, error) {
 	user := os.Getenv("SUDO_USER")
 	if user == "" {
 		return "", fmt.Errorf("не удалось получить путь к клиентским логам")
