@@ -35,7 +35,6 @@ func CheckDump() commands.CmdResult {
 
 		// при первом запуске игнорируем дампы
 		if checkDumpInit {
-			// ограничение на частоту запуска в секунду
 			return commands.NewCmdResult(msg, nil)
 		} else {
 			checkDumpInit = true
