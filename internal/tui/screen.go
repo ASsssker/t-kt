@@ -24,8 +24,8 @@ type Screen struct {
 	helpStyle      lipgloss.Style
 }
 
-func newScreen(sections []tea.Model, sectionsName []string) Screen {
-	bgManager := background.NewBgTaskManager(background.CheckDump)
+func newScreen(sections []tea.Model, sectionsName []string, bgTasks ...func() commands.CmdResult) Screen {
+	bgManager := background.NewBgTaskManager(bgTasks...)
 
 	return Screen{
 		sections:      sections,

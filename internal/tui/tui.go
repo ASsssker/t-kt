@@ -2,6 +2,7 @@ package tui
 
 import (
 	"t-kt/internal/commands"
+	"t-kt/internal/commands/background"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -17,7 +18,7 @@ func NewTUI() tea.Model {
 		newButton("Закрыть клиент", wrap(commands.KillUI)),
 	}
 	section1 := newSection(options)
-	screen := newScreen([]tea.Model{section1}, []string{"AN"})
+	screen := newScreen([]tea.Model{section1}, []string{"AN"}, background.CheckDump)
 
 	return screen
 }
