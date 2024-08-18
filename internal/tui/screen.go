@@ -18,6 +18,7 @@ type Screen struct {
 	isLoaded       bool
 	warnMsg        []string
 	bgManager      background.BgTaskManager
+	loader         loader
 	width          int
 	height         int
 	selectedStyle  lipgloss.Style
@@ -26,18 +27,20 @@ type Screen struct {
 
 func newScreen(sections []tea.Model, sectionsName []string, bgTasks ...func() commands.CmdResult) Screen {
 	bgManager := background.NewBgTaskManager(bgTasks...)
+	l := newLoader([]string{`\`, "|", "/", "―"})
 
 	return Screen{
 		sections:      sections,
 		sectionsName:  sectionsName,
 		bgManager:     bgManager,
+		loader:        l,
 		selectedStyle: newSelectedStyle(),
 		helpStyle:     newHelpStyle(),
 	}
 }
 
 func (screen Screen) Init() tea.Cmd {
-	cmds := append(screen.bgManager.GetWrapTasks(), tea.ClearScreen)
+	cmds := append(screen.bgManager.GetWrapTasks(), tea.ClearScreen, screen.loader.Tick)
 	return tea.Batch(cmds...)
 }
 
@@ -51,7 +54,13 @@ func (screen Screen) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// Обработка фоновых задач
 	if res, ok := msg.(background.BgTaskResult); ok {
-		return screen.handeBg(res)
+		return screen.handleBg(res)
+	}
+
+	// Обработка анимации загрузки
+	if res, ok := msg.(loader); ok {
+		screen.loader = res
+		return screen, screen.loader.Tick
 	}
 
 	// Блокируем интерфейс во время выпололнения команды
@@ -144,7 +153,7 @@ func (screen Screen) handleCmdResult(msg commands.CmdResult) (tea.Model, tea.Cmd
 	return screen, nil
 }
 
-func (screen Screen) handeBg(msg background.BgTaskResult) (tea.Model, tea.Cmd) {
+func (screen Screen) handleBg(msg background.BgTaskResult) (tea.Model, tea.Cmd) {
 	if str := msg.Result.GetMsg(); str != "" {
 		screen.warnMsg = append(screen.warnMsg, str)
 	}
@@ -182,8 +191,12 @@ func (screen Screen) viewHelp(currentView string) string {
 	for i := rowCount; i <= screen.height-5; i++ {
 		currentView += "\n"
 	}
-	currentView += screen.helpStyle.Render("\nc очистка вывода\tq выход \n")
+	if screen.isLoaded {
+		currentView += screen.loader.View() + screen.helpStyle.Render("\nc очистка вывода\tq выход \n")
+	} else {
+		currentView += screen.helpStyle.Render("\nc очистка вывода\tq выход \n")
 
+	}
 	return currentView
 }
 
