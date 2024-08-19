@@ -8,7 +8,7 @@
 ```
 Далее запускаем скрипт который скачает нужную версию Go и соберет проект
 ```bash
-  git cline https://github.com/ASsssker/t-kt.git
+  git clone https://github.com/ASsssker/t-kt.git
   cd t-kt
   sudo ./install.sh
 ```
