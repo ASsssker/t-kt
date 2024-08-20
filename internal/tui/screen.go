@@ -178,8 +178,9 @@ func (screen Screen) viewWarnMsg() string {
 	}
 
 	for _, msg := range msgSlice {
-		if len(msg) >= screen.width-5 {
-			warnMsgs += msg[:screen.width-5] + "...\n"
+		runeMsg := []rune(msg)
+		if len(runeMsg) >= screen.width-5 {
+			warnMsgs += string(runeMsg[:screen.width-5]) + "...\n"
 		} else {
 			warnMsgs += fmt.Sprintf("%s\n", msg)
 		}
