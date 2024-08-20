@@ -3,6 +3,8 @@
 go_url=https://go.dev/dl/go1.23.0.linux-amd64.tar.gz
 user_profile="/home/${SUDO_USER}/.profile"
 
+trap "echo Ошибка при установке; exit" ERR
+
 if [ ! -d /usr/local/go ]; then
     filename="$(mktemp go.XXXXX)"
     
