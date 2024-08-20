@@ -46,21 +46,31 @@ func (screen Screen) Init() tea.Cmd {
 
 func (screen Screen) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
+	switch msg := msg.(type) {
 	// Обработка результатов выполнения команд
-	if res, ok := msg.(commands.CmdResult); ok {
+	case commands.CmdResult:
 		screen.isLoaded = false
-		return screen.handleCmdResult(res)
-	}
-
+		return screen.handleCmdResult(msg)
 	// Обработка фоновых задач
-	if res, ok := msg.(background.BgTaskResult); ok {
-		return screen.handleBg(res)
-	}
-
+	case background.BgTaskResult:
+		return screen.handleBg(msg)
 	// Обработка анимации загрузки
-	if res, ok := msg.(loader); ok {
-		screen.loader = res
+	case loader:
+		screen.loader = msg
 		return screen, screen.loader.Tick
+	// Обработка событий изменения размера консоли
+	case tea.WindowSizeMsg:
+		screen.width = msg.Width
+		screen.height = msg.Height
+		return screen, nil
+	// Обработка нажатий кнопок не связанных с изменением интерфейса
+	case tea.KeyMsg:
+		switch msg.String() {
+		// Очистка вывода
+		case "c":
+			screen.warnMsg = []string{}
+			return screen, nil
+		}
 	}
 
 	// Блокируем интерфейс во время выпололнения команды
@@ -72,12 +82,8 @@ func (screen Screen) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var model tea.Model
 
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		screen.width = msg.Width
-		screen.height = msg.Height
-		return screen, nil
-
 	case tea.KeyMsg:
+		// Обработка нажатий кнопок связанных с изменением интерфейса
 		switch msg.String() {
 		case "a", "d", "left", "right":
 			model, cmd = screen.changeSection(msg)
@@ -89,9 +95,6 @@ func (screen Screen) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter", " ":
 			screen.isLoaded = true
 			return screen.updateSection(msg)
-		case "c":
-			screen.warnMsg = []string{}
-			return screen, nil
 		}
 	default:
 		return screen, nil
