@@ -178,7 +178,11 @@ func (screen Screen) viewWarnMsg() string {
 	}
 
 	for _, msg := range msgSlice {
-		warnMsgs += fmt.Sprintf("%s\n", msg)
+		if len(msg) >= screen.width-5 {
+			warnMsgs += msg[:screen.width-5] + "...\n"
+		} else {
+			warnMsgs += fmt.Sprintf("%s\n", msg)
+		}
 	}
 
 	// Если сообщений меньше msgCount добавляем пустые строки
