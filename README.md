@@ -6,7 +6,7 @@
 ```bash
   rm -rf /usr/local/go
 ```
-Далее запускаем скрипт который скачает нужную версию Go и соберет проект
+Запускаем скрипт который выполнит установку
 ```bash
   git clone https://github.com/ASsssker/t-kt.git
   cd t-kt
