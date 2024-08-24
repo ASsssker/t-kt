@@ -29,7 +29,7 @@ if [ -d /usr/local/go ]; then
     user_go_version="$(/usr/local/go/bin/go version | awk '{print $3}' | cut -d 'o' -f 2)"
 
     # Если версия Go ниже необходимой
-    if [[  $( echo "${user_go_version}" | awk -F '.' '{print $2}') -lt 24 ]]; then
+    if [[  $( echo "${user_go_version}" | awk -F '.' '{print $2}') -lt 23 ]]; then
         echo "В данный момент установлен Go версии ${user_go_version}, а для сборки проекта необходима версия не ниже 1.23.0"
         read -p "Обновить Go до версии 1.23.0?(Y/y-обновить):" is_install
         install_select $is_install
