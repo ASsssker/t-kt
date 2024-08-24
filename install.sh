@@ -6,15 +6,15 @@ user_profile="/home/${SUDO_USER}/.profile"
 trap "echo Ошибка при установке; exit" ERR
 
 function install_go() {
+    trap "echo Ошибка при установке; rm -f ${filename} exit" ERR
+
     if [ "$1" == "update"]; then
         rm -rf /usr/local/go 
     else
         echo "export PATH=\$PATH:/usr/local/go/bin" >> "${user_profile}"
     fi
     
-    trap "echo Ошибка при установке; rm -f ${filename} exit" ERR
     filename="$(mktemp go.XXXXX.tar.gz)"
-    
     echo $(wget -O "${filename}" "${go_url}")
     tar -C "/usr/local" -xzf "${filename}"
     rm -f "${filename}"
@@ -41,7 +41,7 @@ if [ -d /usr/local/go ]; then
         install_select $is_install "update"
     fi
 else
-    echo "Необходимо устаноть Go 1.23.0"
+    echo "Необходимо установить Go 1.23.0"
     read -p "Установить Go 1.23.0?(Y/y-установить):" is_install
     install_select $is_install
 fi
