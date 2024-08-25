@@ -54,6 +54,13 @@ func (screen Screen) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// Обработка фоновых задач
 	case background.BgTaskResult:
 		return screen.handleBg(msg)
+	// Обработка checkbox задач
+	case checkBoxMsg:
+		screen.isLoaded = false
+		if msg != "" {
+			screen.warnMsg = append(screen.warnMsg, string(msg))
+		}
+		return screen, nil
 	// Обработка анимации загрузки
 	case loader:
 		screen.loader = msg
@@ -107,11 +114,11 @@ func (screen Screen) View() string {
 
 	for idx := range screen.sections {
 		if idx == screen.currentSection {
-			sectionNavBar += screen.selectedStyle.Render(fmt.Sprintf("%s\t", screen.sectionsName[idx]))
+			sectionNavBar += screen.selectedStyle.Render(fmt.Sprintf("%s    ", screen.sectionsName[idx]))
 			continue
 		}
 
-		sectionNavBar += fmt.Sprintf("%s\t", screen.sectionsName[idx])
+		sectionNavBar += fmt.Sprintf("%s    ", screen.sectionsName[idx])
 	}
 
 	sectionNavBar += "\n\n"
