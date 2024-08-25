@@ -31,6 +31,11 @@ function install_select() {
 }
 
 
+if [ "$EUID" -ne 0 ]; then
+    echo "Скрипт необходимо запускать через sudo"
+    exit 1
+fi
+
 if [ -d /usr/local/go ]; then
     user_go_version="$(/usr/local/go/bin/go version | awk '{print $3}' | cut -d 'o' -f 2)"
 
