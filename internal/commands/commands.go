@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 )
 
 func ClearLogs() CmdResult {
@@ -105,4 +106,75 @@ func SwitchToDebug() CmdResult {
 	}
 
 	return NewCmdResult("", nil)
+}
+
+func DisableObselete() CmdResult {
+	repFiles := []string{}
+	f, err := os.Open(DriverPackRepoAbsPath)
+	if err != nil {
+		return CmdResult{err: err}
+	}
+	defer f.Close()
+
+	files, err := f.ReadDir(0)
+	if err != nil {
+		return CmdResult{err: err}
+	}
+
+	for _, file := range files {
+		if !file.IsDir() && strings.Contains(file.Name(), ".rep") {
+			repFiles = append(repFiles, DriverPackRepoAbsPath+"/"+file.Name())
+		}
+	}
+
+	errChan := make(chan error)
+	wg := sync.WaitGroup{}
+	wg.Add(len(repFiles))
+	for _, fileName := range repFiles {
+		go func(fileName string) {
+			defer wg.Done()
+			file, err := os.OpenFile(fileName, os.O_RDWR, 0)
+			if err != nil {
+				errChan <- err
+				return
+			}
+			defer file.Close()
+
+			buf, err := io.ReadAll(file)
+			if err != nil {
+				errChan <- err
+				return
+			}
+
+			buf = bytes.Replace(buf, []byte("obsolete=\"true\""), []byte("obsolete=\"false\""), -1)
+
+			if err = file.Truncate(0); err != nil {
+				errChan <- err
+				return
+			}
+			if _, err = file.Seek(0, 0); err != nil {
+				errChan <- err
+				return
+			}
+
+			if _, err = file.Write(buf); err != nil {
+				errChan <- err
+				return
+			}
+		}(fileName)
+	}
+
+	done := make(chan struct{})
+
+	go func() {
+		wg.Wait()
+		done <- struct{}{}
+	}()
+
+	select {
+	case <-done:
+		return CmdResult{}
+	case err := <-errChan:
+		return CmdResult{err: err}
+	}
 }

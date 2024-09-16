@@ -10,6 +10,8 @@ const (
 
 	serverConfFilePath = "/opt/AxxonSoft/AxxonNext/instance.conf"
 
+	DriverPackRepoAbsPath = "/opt/AxxonSoft/Ipint.DriverPack/3.0.0"
+
 	clientProcessName = "UILauncher"
 )
 

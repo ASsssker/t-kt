@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"fmt"
 	"t-kt/internal/commands"
 	"t-kt/internal/commands/background"
 
@@ -17,14 +16,15 @@ func NewTUI() tea.Model {
 		newButton("Собрать саппорт", wrap(commands.ExtractLogs)),
 		newButton("Включить дебаг для сервера", wrap(commands.SwitchToDebug)),
 		newButton("Закрыть клиент", wrap(commands.KillUI)),
+		newButton("Чистка обсолетов", wrap(commands.DisableObselete)),
 	}
-	options2 := []tea.Model{
-		newCheckbox("тест1", func() tea.Msg { fmt.Print("Hi"); return "" }, func() tea.Msg { return 0 }, true),
-		newCheckbox("тест2", func() tea.Msg { fmt.Print("Do"); return "" }, func() tea.Msg { fmt.Print("Do cancel"); return 0 }, false),
-	}
+	// options2 := []tea.Model{
+	// 	newCheckbox("тест1", func() tea.Msg { fmt.Print("Hi"); return "" }, func() tea.Msg { return 0 }, true),
+	// 	newCheckbox("тест2", func() tea.Msg { fmt.Print("Do"); return "" }, func() tea.Msg { fmt.Print("Do cancel"); return 0 }, false),
+	// }
 	section1 := newSection(options1)
-	section2 := newSection(options2)
-	screen := newScreen([]tea.Model{section1, section2}, []string{"AN", "Testing"}, background.CheckDump)
+	// section2 := newSection(options2)
+	screen := newScreen([]tea.Model{section1}, []string{"AN", "Testing"}, background.CheckDump)
 
 	return screen
 }
