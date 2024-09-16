@@ -11,3 +11,11 @@
 ```bash
   sudo t-kt
 ```
+
+## Обновление
+
+```bash
+  cd t-kt
+  git pull
+  sudo ./install.sh
+```
