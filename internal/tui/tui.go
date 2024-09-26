@@ -1,7 +1,7 @@
 package tui
 
 import (
-	"fmt"
+	"os"
 	"t-kt/internal/commands"
 	"t-kt/internal/commands/background"
 	"t-kt/internal/configs"
@@ -22,9 +22,11 @@ func NewTUI(conf configs.Config) tea.Model {
 	}
 	var test bool
 
-	switcher, _ := commands.NewArchiveSwitcher(&test, conf.IPC)
-	fmt.Println("dsd")
-	options2 := []tea.Model{ newCheckbox("Запись отрезками", switcher, nil)}
+	switcher, err := commands.NewArchiveSwitcher(&test, conf.IPC)
+	if err != nil {
+		os.Exit(1)
+	}
+	options2 := []tea.Model{newCheckbox("Запись отрезками", switcher, nil)}
 	section1 := newSection(options1)
 	section2 := newSection(options2)
 	screen := newScreen([]tea.Model{section1, section2}, []string{"AN", "RS"}, background.CheckDump)

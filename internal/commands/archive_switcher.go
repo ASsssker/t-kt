@@ -47,10 +47,10 @@ type Channel struct {
 
 func NewArchiveSwitcher(statusChecker *bool, conf configs.IPCConf) (func(ctx context.Context) CmdResult, error) {
 	sleepDuration := conf.ArchiveSwitchTime
-	username, password, addr, err := conf.GetDNSConf()
-	if err != nil {
-		return nil, err
-	}
+	username, password, addr, _ := conf.GetDNSConf()
+	// if err != nil {
+	// 	return nil, err
+	// }
 	return func(ctx context.Context) CmdResult {
 		c, _ := cookiejar.New(nil)
 		client := &http.Client{
