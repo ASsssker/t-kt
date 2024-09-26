@@ -26,3 +26,5 @@ go.work.sum
 
 t-kt
 main
+
+*.tape
