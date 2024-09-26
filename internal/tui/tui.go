@@ -1,13 +1,15 @@
 package tui
 
 import (
+	"fmt"
 	"t-kt/internal/commands"
 	"t-kt/internal/commands/background"
+	"t-kt/internal/configs"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-func NewTUI() tea.Model {
+func NewTUI(conf configs.Config) tea.Model {
 	options1 := []tea.Model{
 		newButton("Очистить логи", wrap(commands.ClearLogs)),
 		newButton("Перезапустить сервер", wrap(commands.RestartServer)),
@@ -18,13 +20,14 @@ func NewTUI() tea.Model {
 		newButton("Закрыть клиент", wrap(commands.KillUI)),
 		newButton("Чистка обсолетов", wrap(commands.DisableObselete)),
 	}
-	// options2 := []tea.Model{
-	// 	newCheckbox("тест1", func() tea.Msg { fmt.Print("Hi"); return "" }, func() tea.Msg { return 0 }, true),
-	// 	newCheckbox("тест2", func() tea.Msg { fmt.Print("Do"); return "" }, func() tea.Msg { fmt.Print("Do cancel"); return 0 }, false),
-	// }
+	var test bool
+
+	switcher, _ := commands.NewArchiveSwitcher(&test, conf.IPC)
+	fmt.Println("dsd")
+	options2 := []tea.Model{ newCheckbox("Запись отрезками", switcher, nil)}
 	section1 := newSection(options1)
-	// section2 := newSection(options2)
-	screen := newScreen([]tea.Model{section1}, []string{"AN", "Testing"}, background.CheckDump)
+	section2 := newSection(options2)
+	screen := newScreen([]tea.Model{section1, section2}, []string{"AN", "RS"}, background.CheckDump)
 
 	return screen
 }

@@ -5,6 +5,7 @@ go 1.23.0
 require (
 	github.com/charmbracelet/bubbletea v0.26.6
 	github.com/charmbracelet/lipgloss v0.12.1
+	github.com/icholy/digest v0.1.23
 	github.com/muesli/reflow v0.3.0
 )
 

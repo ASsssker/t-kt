@@ -3,7 +3,7 @@ package tui
 import (
 	"context"
 	"sync"
-	"time"
+	"t-kt/internal/commands"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -20,28 +20,20 @@ type checkbox struct {
 	checkedStyle lipgloss.Style
 }
 
-func newCheckbox(title string, enableF func() tea.Msg, disableF func() tea.Msg, periodic bool) checkbox {
+func newCheckbox(title string, enableF func(context.Context) commands.CmdResult, disableF func() commands.CmdResult) checkbox {
 	enable, disable := func() (func(), func() tea.Msg) {
 		var mu sync.Mutex
 		var ctx context.Context
 		var cancel context.CancelFunc
 
 		e := func() {
-			if periodic {
-				mu.Lock()
+			mu.Lock()
+			defer mu.Unlock()
+			if disableF == nil {
 				ctx, cancel = context.WithCancel(context.Background())
-				mu.Unlock()
-				ticker := time.NewTicker(time.Second)
-				for {
-					select {
-					case <-ctx.Done():
-						return
-					case <-ticker.C:
-						enableF()
-					}
-				}
+				go enableF(ctx)
 			} else {
-				enableF()
+				enableF(nil)
 			}
 		}
 
@@ -50,6 +42,7 @@ func newCheckbox(title string, enableF func() tea.Msg, disableF func() tea.Msg, 
 			defer mu.Unlock()
 			if cancel != nil {
 				cancel()
+				return checkBoxMsg("Задача остановлена")
 			}
 			disableF()
 			return checkBoxMsg("Задача остановлена")

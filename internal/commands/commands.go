@@ -127,7 +127,7 @@ func DisableObselete() CmdResult {
 		}
 	}
 
-	errChan := make(chan error)
+	errChan := make(chan error, 1)
 	wg := sync.WaitGroup{}
 	wg.Add(len(repFiles))
 	for _, fileName := range repFiles {
@@ -164,7 +164,7 @@ func DisableObselete() CmdResult {
 		}(fileName)
 	}
 
-	done := make(chan struct{})
+	done := make(chan struct{}, 1)
 
 	go func() {
 		wg.Wait()
