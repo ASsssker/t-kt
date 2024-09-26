@@ -1,5 +1,5 @@
 # t-kt
-<img src="https://github.com/ASsssker/t-kt/blob/main/out.gif" width="900" height="500">
+<img src="https://github.com/ASsssker/t-kt/blob/main/out.gif" width="500" height="300">
 
 ## Установка
 
