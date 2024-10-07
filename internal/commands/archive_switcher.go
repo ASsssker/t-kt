@@ -81,7 +81,7 @@ func NewArchiveSwitcher(statusChecker *bool, conf configs.IPCConf) (func(ctx con
 					if err != nil {
 						return
 					}
-					time.Sleep(5 * time.Second)
+					time.Sleep(12 * time.Second)
 					client.Do(req)
 				}
 			}
