@@ -1,7 +1,7 @@
 package tui
 
 import (
-	"os"
+	"log"
 	"t-kt/internal/commands"
 	"t-kt/internal/commands/background"
 	"t-kt/internal/configs"
@@ -10,6 +10,9 @@ import (
 )
 
 func NewTUI(conf configs.Config) tea.Model {
+	sections := []tea.Model{}
+	section_name := []string{"AN"}
+
 	options1 := []tea.Model{
 		newButton("Очистить логи", wrap(commands.ClearLogs)),
 		newButton("Перезапустить сервер", wrap(commands.RestartServer)),
@@ -20,16 +23,20 @@ func NewTUI(conf configs.Config) tea.Model {
 		newButton("Закрыть клиент", wrap(commands.KillUI)),
 		newButton("Чистка обсолетов", wrap(commands.DisableObselete)),
 	}
-	var test bool
+	sections = append(sections, newSection(options1))
 
-	switcher, err := commands.NewArchiveSwitcher(&test, conf.IPC)
-	if err != nil {
-		os.Exit(1)
+	if len(conf.IPC.DNS) != 0 {
+		switcher, err := commands.NewArchiveSwitcher(conf.IPC)
+		if err != nil {
+			log.Fatal(err)
+		}
+		options2 := []tea.Model{newCheckbox("Запись отрезками", switcher, nil)}
+		sections = append(sections, options2...)
+		section_name = append(section_name, "RS")
+
 	}
-	options2 := []tea.Model{newCheckbox("Запись отрезками", switcher, nil)}
-	section1 := newSection(options1)
-	section2 := newSection(options2)
-	screen := newScreen([]tea.Model{section1, section2}, []string{"AN", "RS"}, background.CheckDump)
+
+	screen := newScreen(sections, section_name, background.CheckDump)
 
 	return screen
 }
