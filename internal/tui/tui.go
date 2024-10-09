@@ -31,7 +31,7 @@ func NewTUI(conf configs.Config) tea.Model {
 			log.Fatal(err)
 		}
 		options2 := []tea.Model{newCheckbox("Запись отрезками", switcher, nil)}
-		sections = append(sections, options2...)
+		sections = append(sections, newSection(options2))
 		section_name = append(section_name, "RS")
 
 	}
