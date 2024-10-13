@@ -108,7 +108,7 @@ func SwitchToDebug() CmdResult {
 	return NewCmdResult("", nil)
 }
 
-func DisableObselete() CmdResult {
+func DisableObsolete() CmdResult {
 	repFiles := []string{}
 	f, err := os.Open(DriverPackRepoAbsPath)
 	if err != nil {
