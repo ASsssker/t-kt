@@ -21,7 +21,7 @@ func NewTUI(conf configs.Config) tea.Model {
 		newButton("Собрать саппорт", wrap(commands.ExtractLogs)),
 		newButton("Включить дебаг для сервера", wrap(commands.SwitchToDebug)),
 		newButton("Закрыть клиент", wrap(commands.KillUI)),
-		newButton("Чистка обсолетов", wrap(commands.DisableObselete)),
+		newButton("Чистка обсолетов", wrap(commands.DisableObsolete)),
 	}
 	sections = append(sections, newSection(options1))
 
